@@ -1,17 +1,17 @@
-With customer AS 
-(SELECT DISTINCT country
-FROM customers
-ORDER BY country),
-supplier AS
-(SELECT DISTINCT country
-FROM suppliers
-ORDER BY country)
-SELECT supplier.country AS suppliercountry, customer.country AS customercountry
-FROM customer
-LEFT JOIN supplier USING (country)
-UNION ALL
-SELECT customer.country AS customercountry , supplier.country AS suppliercountry
+With supplier AS
+(SELECT country AS SupplierCountry
+FROM suppliers GROUP BY country),
+customer AS
+(SELECT country AS CustomerCountry
+FROM customers GROUP BY country)
+,countries AS 
+(
+SELECT DISTINCT SupplierCountry, CustomerCountry
 FROM supplier
-LEFT JOIN customer USING (country)
-ORDER BY country
-;
+LEFT JOIN customer ON SupplierCountry = CustomerCountry
+UNION ALL
+SELECT DISTINCT  SupplierCountry, CustomerCountry
+FROM customer
+LEFT JOIN supplier ON SupplierCountry = CustomerCountry
+)
+SELECT DISTINCT * FROM countries;
